@@ -77,8 +77,8 @@ publishing {
             name = "GitHubPackages"
             url = uri("https://maven.pkg.github.com/7wlr/wlrgui")
             credentials {
-                username = project.findProperty("7wlr") ?: System.getenv("7wlr")
-                password = project.findProperty("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") ?: System.getenv("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")
+                username = project.findProperty("GITHUB_USER") ?: System.getenv("GITHUB_USER")
+                password = project.findProperty("GITHUB_TOKEN") ?: System.getenv("GITHUB_TOKEN")
             }
         }
     }
@@ -91,5 +91,5 @@ task sourcesJar(type: Jar) {
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
-    from tasks.javadoc.destinationDir
+    from javadoc.destinationDir
 }
