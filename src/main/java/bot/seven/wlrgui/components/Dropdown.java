@@ -1,24 +1,15 @@
 package bot.seven.wlrgui.components;
 
 import bot.seven.wlrgui.theme.GuiColors;
-import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_DROPDOWN_HEIGHT;
-import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_CORNER_RADIUS;
-import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_BORDER_THICKNESS;
-import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_ELEMENT_PADDING_X;
-import static bot.seven.wlrgui.theme.GuiDimensions.SHADOW_OFFSET_X;
-import static bot.seven.wlrgui.theme.GuiDimensions.SHADOW_OFFSET_Y;
-
 import bot.seven.wlrgui.utils.GuiDrawingUtils;
-
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.util.ResourceLocation;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
+import static bot.seven.wlrgui.theme.GuiDimensions.*;
 
 public class Dropdown extends GuiComponentBase {
 
