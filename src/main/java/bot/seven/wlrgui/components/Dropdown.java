@@ -172,10 +172,11 @@ public class Dropdown extends GuiComponentBase {
             );
 
             ScaledResolution sr = new ScaledResolution(mc);
-            int scissorX = (int) (x + borderThickness);
+            int scissorX = (int) (this.x + borderThickness);
             int scissorYDevice = sr.getScaledHeight() - (listTopY + listActualDisplayHeight - (int) borderThickness);
             int scissorWidthDevice = (int) (( (this.needsScrollbar ? listDrawWidth - this.scrollbarWidth : listDrawWidth) - 2 * borderThickness));
             int scissorHeightDevice = (int) (listActualDisplayHeight - 2 * borderThickness);
+
 
             GL11.glEnable(GL11.GL_SCISSOR_TEST);
             GL11.glScissor(
@@ -209,7 +210,7 @@ public class Dropdown extends GuiComponentBase {
                             optionBgColor
                     );
                 }
-                this.fontRenderer.drawStringWithShadow(this.options.get(i), (float)(x + textPaddingX), (float)optionTextVisualY, GuiColors.DROPDOWN_ITEM_TEXT);
+                this.fontRenderer.drawStringWithShadow(this.options.get(i), (float)(this.x + textPaddingX), (float)optionTextVisualY, GuiColors.DROPDOWN_ITEM_TEXT);
             }
             GL11.glDisable(GL11.GL_SCISSOR_TEST);
 
@@ -217,7 +218,7 @@ public class Dropdown extends GuiComponentBase {
                 this.maxScrollYOptions = Math.max(0f, (float)(totalContentHeight - listActualDisplayHeight));
                 this.scrollYOptions = Math.max(0f, Math.min(this.scrollYOptions, this.maxScrollYOptions));
 
-                int scrollbarX = x + listDrawWidth - this.scrollbarWidth - (int)borderThickness;
+                int scrollbarX = this.x + listDrawWidth - this.scrollbarWidth - (int)borderThickness;
                 int scrollbarTrackY = listTopY + (int)borderThickness;
                 int scrollbarTrackHeight = listActualDisplayHeight - 2 * (int)borderThickness;
 
@@ -252,7 +253,7 @@ public class Dropdown extends GuiComponentBase {
     public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
         if (!this.enabled || !this.visible || mouseButton != 0) return false;
 
-        if (mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height) {
+        if (mouseX >= this.x && mouseX < this.x + this.width && mouseY >= this.y && mouseY < this.y + this.height) {
             this.isOpen = !this.isOpen;
             if (this.isOpen && !this.options.isEmpty() && this.selectedIndex != -1) {
                 int selectedItemTopY = this.selectedIndex * this.optionHeight;
@@ -282,7 +283,7 @@ public class Dropdown extends GuiComponentBase {
             int borderT = (int)MODERN_BORDER_THICKNESS;
 
             if (this.needsScrollbar) {
-                int scrollbarX = x + width - this.scrollbarWidth - borderT;
+                int scrollbarX = this.x + this.width - this.scrollbarWidth - borderT;
                 if (mouseX >= scrollbarX && mouseX < scrollbarX + this.scrollbarWidth &&
                         mouseY >= listTopY && mouseY < listBottomY) {
                     this.isDraggingScrollbar = true;
@@ -301,8 +302,8 @@ public class Dropdown extends GuiComponentBase {
                 }
             }
 
-            int itemsAreaClickableWidth = (this.needsScrollbar ? width - this.scrollbarWidth - borderT : width - 2 * borderT);
-            int itemsAreaX = x + borderT;
+            int itemsAreaClickableWidth = (this.needsScrollbar ? this.width - this.scrollbarWidth - borderT : this.width - 2 * borderT);
+            int itemsAreaX = this.x + borderT;
             if (mouseX >= itemsAreaX && mouseX < itemsAreaX + itemsAreaClickableWidth &&
                     mouseY >= listTopY + borderT && mouseY < listBottomY - borderT) {
                 int mouseYWithinListContent = mouseY - (listTopY + borderT);
@@ -316,13 +317,24 @@ public class Dropdown extends GuiComponentBase {
                     return true;
                 }
             }
-            if (mouseX >= x && mouseX < x + width && mouseY >= listTopY && mouseY < listBottomY) {
+            if (mouseX >= this.x && mouseX < this.x + this.width && mouseY >= listTopY && mouseY < listBottomY) {
                 return true;
             }
         }
 
         if (this.isOpen) {
-            close();
+            boolean clickedOutsideMainBox = !(mouseX >= this.x && mouseX < this.x + this.width && mouseY >= this.y && mouseY < this.y + this.height);
+            boolean clickedOutsideListBox = true;
+            if (!this.options.isEmpty()) {
+                int listTopY = this.y + this.height;
+                int listActualDisplayHeight = getListDisplayHeight();
+                int listBottomY = listTopY + listActualDisplayHeight;
+                clickedOutsideListBox = !(mouseX >= this.x && mouseX < this.x + this.width && mouseY >= listTopY && mouseY < listBottomY);
+            }
+
+            if (clickedOutsideMainBox && clickedOutsideListBox) {
+                close();
+            }
         }
         return false;
     }
@@ -347,7 +359,7 @@ public class Dropdown extends GuiComponentBase {
             if (scrollbarTrackHeight <= 0) return;
 
             float thumbHeightRatio = Math.max(0.1f, Math.min(1f, (float)listActualDisplayHeight / (float)getTotalOptionsContentHeight()));
-            float thumbH = Math.max(15f, listActualDisplayHeight * thumbHeightRatio);
+            float thumbH = Math.max(15f, scrollbarTrackHeight * thumbHeightRatio);
             float draggableTrackPixelSpace = scrollbarTrackHeight - thumbH;
 
             if (draggableTrackPixelSpace <= 0f) return;
@@ -361,12 +373,12 @@ public class Dropdown extends GuiComponentBase {
     public boolean handleMouseScroll(int mouseX, int mouseY, int dWheel) {
         if (!this.isOpen || !this.enabled || !this.visible || this.options.isEmpty() || !this.needsScrollbar) return false;
 
-        int listTopY = y + height;
+        int listTopY = this.y + this.height;
         int listVisibleH = getListDisplayHeight();
         int listBottomY = listTopY + listVisibleH;
 
-        int itemsAreaX = x + (int)MODERN_BORDER_THICKNESS;
-        int itemsAreaWidth = width - (this.needsScrollbar ? this.scrollbarWidth : 0) - 2 * (int)MODERN_BORDER_THICKNESS;
+        int itemsAreaX = this.x + (int)MODERN_BORDER_THICKNESS;
+        int itemsAreaWidth = this.width - (this.needsScrollbar ? this.scrollbarWidth : 0) - 2 * (int)MODERN_BORDER_THICKNESS;
 
         if (mouseX >= itemsAreaX && mouseX < itemsAreaX + itemsAreaWidth &&
                 mouseY >= listTopY && mouseY < listBottomY) {
