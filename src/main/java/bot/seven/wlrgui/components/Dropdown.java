@@ -95,7 +95,7 @@ public class Dropdown extends GuiComponentBase {
         return selectedIndex;
     }
 
-    private int getListDisplayHeight() {
+    public int getListDisplayHeight() {
         return Math.min(options.size(), maxDisplayableOptions) * optionHeight;
     }
 

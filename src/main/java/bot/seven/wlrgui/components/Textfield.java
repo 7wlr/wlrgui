@@ -4,7 +4,6 @@ import bot.seven.wlrgui.theme.GuiColors;
 import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_TEXT_INPUT_HEIGHT;
 import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_ELEMENT_PADDING_X;
 import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_CORNER_RADIUS;
-import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_BORDER_THICKNESS;
 
 import bot.seven.wlrgui.utils.GuiDrawingUtils;
 
@@ -25,6 +24,8 @@ public class Textfield extends GuiComponentBase {
     private final Predicate<String> validator;
     private final Consumer<String> onTextChanged;
     private final Consumer<Boolean> onFocusChanged;
+
+    private boolean wasFocused = false;
 
     public Textfield(
             int id, int x, int y, int width, int height,
@@ -79,134 +80,113 @@ public class Textfield extends GuiComponentBase {
         this(id, x, y, width, MODERN_TEXT_INPUT_HEIGHT, label, initialText, validator, onTextChanged, focused -> {});
     }
 
+    @Override
+    public void drawComponent(int mouseX, int mouseY, float partialTicks) {
+        if (!this.visible) return;
+
+        this.updateHoverState(mouseX, mouseY);
+
+        int borderColor = this.enabled ? (this.textField.isFocused() ? GuiColors.TEXTFIELD_BORDER_FOCUSED : GuiColors.TEXTFIELD_BORDER) : GuiColors.COMPONENT_BACKGROUND_DISABLED;
+        int backgroundColor = this.enabled ? GuiColors.TEXTFIELD_BACKGROUND : GuiColors.COMPONENT_BACKGROUND_DISABLED;
+
+        GuiDrawingUtils.drawRoundedRect(
+                (float) this.x, (float) this.y,
+                (float) this.width, (float) this.height,
+                4f, backgroundColor
+        );
+
+        GuiDrawingUtils.drawRoundedRect(
+                (float) this.x, (float) this.y,
+                (float) this.width, (float) this.height,
+                4f, borderColor
+        );
+
+        this.textField.drawTextBox();
+
+        if (this.label != null && !this.label.isEmpty()) {
+            int textColor = this.enabled ? GuiColors.TEXT_PRIMARY : GuiColors.TEXT_DISABLED;
+            this.fontRenderer.drawStringWithShadow(
+                    this.label,
+                    (float) this.x,
+                    (float) (this.y - this.fontRenderer.FONT_HEIGHT - 4),
+                    textColor
+            );
+        }
+    }
+
+    @Override
+    public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
+        if (!this.enabled || !this.visible) return false;
+
+        boolean wasFocused = this.textField.isFocused();
+        this.textField.mouseClicked(mouseX, mouseY, mouseButton);
+        boolean isFocused = this.textField.isFocused();
+
+        if (wasFocused != isFocused) {
+            this.wasFocused = wasFocused;
+        }
+
+        if (this.enabled && this.textField.isFocused() != wasFocused && this.onFocusChanged != null) {
+            this.onFocusChanged.accept(this.textField.isFocused());
+        }
+        return this.textField.isFocused();
+    }
+
+    @Override
+    public boolean keyTyped(char typedChar, int keyCode) {
+        if (!this.enabled || !this.visible) return false;
+
+        String oldText = this.textField.getText();
+        this.textField.textboxKeyTyped(typedChar, keyCode);
+        String newText = this.textField.getText();
+
+        if (!oldText.equals(newText) && this.validator.test(newText) && this.onTextChanged != null) {
+            this.onTextChanged.accept(newText);
+        }
+        return false;
+    }
+
+    @Override
+    public void updateScreen() {
+        if (!this.visible) return;
+        this.textField.updateCursorCounter();
+    }
+
+    public void setText(String text) {
+        if (this.validator.test(text)) {
+            this.textField.setText(text);
+            if (this.onTextChanged != null) {
+                this.onTextChanged.accept(text);
+            }
+        }
+    }
 
     public String getText() {
         return this.textField.getText();
     }
 
-    public void setText(String newText, boolean notify) {
-        String oldText = this.textField.getText();
-        if (this.validator.test(newText)) {
-            this.textField.setText(newText);
-            if (notify && !newText.equals(oldText) && this.onTextChanged != null) {
-                this.onTextChanged.accept(newText);
-            }
-        } else {
-            this.textField.setText(oldText);
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        this.textField.setEnabled(enabled);
+    }
+
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        if (!visible) {
+            this.textField.setFocused(false);
         }
     }
 
-    public void setText(String newText) {
-        setText(newText, true);
+    public void setPosition(int x, int y) {
+        super.setPosition(x, y);
+        this.textField.xPosition = x;
+        this.textField.yPosition = y;
     }
 
-    @Override
-    public void drawComponent(int mouseX, int mouseY, float partialTicks) {
-        super.drawComponent(mouseX, mouseY, partialTicks);
-        if (!this.visible) return;
-
-        this.textField.setEnabled(this.enabled);
-
-        this.textField.xPosition = this.x + this.horizontalTextPadding;
-        this.textField.yPosition = this.y + this.verticalTextPadding;
-        this.textField.width = this.width - (2 * this.horizontalTextPadding);
-
-        int currentBgColor;
-        int currentOuterBorderColor;
-        int innerShadowEffect = (this.textField.isFocused() || !this.enabled) ? 0 : GuiColors.TRANSPARENT_BLACK_LIGHT;
-        int innerHighlightEffect = (this.textField.isFocused() || !this.enabled) ? 0 : GuiColors.TRANSPARENT_TEXT_PRIMARY_VERY_LIGHT;
-
-        if (!this.enabled) {
-            currentBgColor = GuiColors.COMPONENT_BACKGROUND_DISABLED;
-            currentOuterBorderColor = GuiColors.MODERN_UI_ELEMENT_BORDER;
-        } else if (this.textField.isFocused()) {
-            currentBgColor = GuiColors.TEXTFIELD_BACKGROUND;
-            currentOuterBorderColor = GuiColors.TEXTFIELD_BORDER_FOCUSED;
-        } else {
-            currentBgColor = GuiColors.TEXTFIELD_BACKGROUND;
-            currentOuterBorderColor = GuiColors.TEXTFIELD_BORDER;
-        }
-
-        if (this.textField.isFocused() && this.enabled) {
-            GuiDrawingUtils.drawRoundedRect(
-                    (float) this.x - 1, (float) this.y - 1,
-                    (float) this.width + 2, (float) this.height + 2,
-                    this.cornerRadius + 1f,
-                    GuiColors.PRIMARY_RED_BRIGHT_GLOW_EFFECT
-            );
-        }
-
-        GuiDrawingUtils.drawModernRoundedRect(
-                (float) this.x, (float) this.y,
-                (float) this.width, (float) this.height,
-                this.cornerRadius,
-                currentBgColor,
-                currentOuterBorderColor,
-                innerHighlightEffect,
-                innerShadowEffect,
-                MODERN_BORDER_THICKNESS
-        );
-
-        this.textField.setTextColor(this.enabled ? GuiColors.TEXTFIELD_TEXT : GuiColors.TEXT_DISABLED);
-        this.textField.drawTextBox();
-
-        drawTopLabel(-3);
-    }
-
-    @Override
-    public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        if (!this.visible) {
-            if (this.textField.isFocused()) setFocused(false);
-            return false;
-        }
-
-        boolean previousFocusState = this.textField.isFocused();
-        boolean clickedThisComponent = false;
-
-        if (mouseX >= this.x && mouseX < this.x + this.width &&
-                mouseY >= this.y && mouseY < this.y + this.height) {
-            clickedThisComponent = true;
-            if (this.enabled) {
-                this.textField.mouseClicked(mouseX, mouseY, mouseButton);
-            } else {
-                if (this.textField.isFocused()) setFocused(false);
-            }
-        } else {
-            if (this.textField.isFocused()) {
-                setFocused(false);
-            }
-        }
-
-        if (this.enabled && this.textField.isFocused() != previousFocusState && this.onFocusChanged != null) {
-            this.onFocusChanged.accept(this.textField.isFocused());
-        }
-        return this.enabled && clickedThisComponent && this.textField.isFocused();
-    }
-
-    @Override
-    public boolean keyTyped(char typedChar, int keyCode) {
-        if (!this.enabled || !this.visible || !this.textField.isFocused()) return false;
-
-        String previousText = this.textField.getText();
-        int previousCursorPosition = this.textField.getCursorPosition();
-        int previousSelectionEnd = this.textField.getSelectionEnd();
-
-        boolean handledByVanilla = this.textField.textboxKeyTyped(typedChar, keyCode);
-
-        if (handledByVanilla) {
-            if (!this.textField.getText().equals(previousText)) {
-                if (this.validator.test(this.textField.getText())) {
-                    if (this.onTextChanged != null) {
-                        this.onTextChanged.accept(this.textField.getText());
-                    }
-                } else {
-                    this.textField.setText(previousText);
-                    this.textField.setCursorPosition(previousCursorPosition);
-                    this.textField.setSelectionPos(previousSelectionEnd);
-                }
-            }
-        }
-        return handledByVanilla;
+    public void setSize(int width, int height) {
+        super.setSize(width, height);
+        this.textField.width = width;
+        this.textField.height = height;
     }
 
     public void setFocused(boolean isFocused) {

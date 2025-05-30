@@ -85,6 +85,18 @@ public class Slider extends GuiComponentBase {
         this(id, x, y, width, MODERN_SLIDER_HEIGHT, label, initialValue, minValue, maxValue, step, val -> String.format("%.2f", val), onValueChanged);
     }
 
+    public Slider(
+            int id, int x, int y, int width,
+            String label,
+            float initialValue,
+            float minValue,
+            float maxValue,
+            float step,
+            Function<Float, String> displayFormat,
+            Consumer<Float> onValueChanged
+    ) {
+        this(id, x, y, width, MODERN_SLIDER_HEIGHT, label, initialValue, minValue, maxValue, step, displayFormat, onValueChanged);
+    }
 
     private float calculateKnobCenterX(float value) {
         float progress = (maxValue - minValue == 0f) ? 0f : (value - minValue) / (maxValue - minValue);

@@ -1,149 +1,86 @@
 package bot.seven.wlrgui.components;
 
 import bot.seven.wlrgui.theme.GuiColors;
-import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_CHECKBOX_SIZE;
-import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_BORDER_THICKNESS;
-import static bot.seven.wlrgui.theme.GuiDimensions.SHADOW_OFFSET_X;
-import static bot.seven.wlrgui.theme.GuiDimensions.SHADOW_OFFSET_Y;
 import bot.seven.wlrgui.utils.GuiDrawingUtils;
-
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.util.ResourceLocation;
+import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_CHECKBOX_SIZE;
 
 import java.util.function.Consumer;
 
 public class Checkbox extends GuiComponentBase {
-
-    private final int boxSize;
-    private boolean isChecked;
+    private boolean checked;
     private final Consumer<Boolean> onValueChanged;
 
-    private final float visualCornerRadius = 2f;
-    private final float checkmarkInsetRatio = 0.2f;
-
-    public Checkbox(
-            int id, int x, int y,
-            int boxSize,
-            String label,
-            boolean initialValue,
-            Consumer<Boolean> onValueChanged
-    ) {
-        super(id, x, y, boxSize, boxSize, label);
-        this.boxSize = boxSize;
-        this.isChecked = initialValue;
+    public Checkbox(int id, int x, int y, String label, boolean initialValue, Consumer<Boolean> onValueChanged) {
+        super(id, x, y, MODERN_CHECKBOX_SIZE, MODERN_CHECKBOX_SIZE, label);
+        this.checked = initialValue;
         this.onValueChanged = onValueChanged;
-    }
-
-    public Checkbox(
-            int id, int x, int y,
-            String label,
-            boolean initialValue,
-            Consumer<Boolean> onValueChanged
-    ) {
-        this(id, x, y, MODERN_CHECKBOX_SIZE, label, initialValue, onValueChanged);
-    }
-
-    public boolean isChecked() {
-        return this.isChecked;
     }
 
     @Override
     public void drawComponent(int mouseX, int mouseY, float partialTicks) {
-        super.drawComponent(mouseX, mouseY, partialTicks);
         if (!this.visible) return;
 
-        boolean isLabelActuallyHovered = isLabelHovered(mouseX, mouseY) && this.enabled;
-        boolean visualHover = this.hovered || isLabelActuallyHovered;
+        this.updateHoverState(mouseX, mouseY);
 
-        int currentBgColor;
-        int currentBorderColor;
-        int currentCheckColor;
-
-        if (!this.enabled) {
-            currentBgColor = GuiColors.COMPONENT_BACKGROUND_DISABLED;
-            currentBorderColor = GuiColors.MODERN_UI_ELEMENT_BORDER;
-            currentCheckColor = GuiColors.TEXT_DISABLED;
-        } else {
-            currentBgColor = visualHover ? GuiColors.CHECKBOX_BOX_HOVER : GuiColors.CHECKBOX_BOX;
-            currentBorderColor = (visualHover || this.isChecked) ? GuiColors.PRIMARY_RED_BRIGHT : GuiColors.MODERN_UI_ELEMENT_BORDER;
-            currentCheckColor = GuiColors.CHECKBOX_CHECK;
-        }
-
-        GuiDrawingUtils.drawRoundedRectDropShadow(
+        int boxColor = this.enabled ? (this.hovered ? GuiColors.CHECKBOX_BOX_HOVER : GuiColors.CHECKBOX_BOX) : GuiColors.COMPONENT_BACKGROUND_DISABLED;
+        GuiDrawingUtils.drawRoundedRect(
                 (float) this.x, (float) this.y,
-                (float) this.width, (float) this.height,
-                this.visualCornerRadius,
-                GuiColors.SUBTLE_SHADOW_COLOR,
-                (float) SHADOW_OFFSET_X / 2f, (float) SHADOW_OFFSET_Y / 2f
+                (float) MODERN_CHECKBOX_SIZE, (float) MODERN_CHECKBOX_SIZE,
+                2f, boxColor
         );
 
-        GuiDrawingUtils.drawModernRoundedRect(
-                (float) this.x, (float) this.y,
-                (float) this.width, (float) this.height,
-                this.visualCornerRadius,
-                currentBgColor,
-                currentBorderColor,
-                (visualHover || !this.enabled) ? 0 : GuiColors.TRANSPARENT_TEXT_PRIMARY_VERY_LIGHT,
-                (visualHover || !this.enabled) ? 0 : GuiColors.TRANSPARENT_BLACK_VERY_LIGHT,
-                MODERN_BORDER_THICKNESS
-        );
-
-        if (this.isChecked) {
-            int inset = Math.max(1, (int) (this.width * this.checkmarkInsetRatio));
+        if (this.checked) {
+            int checkColor = this.enabled ? GuiColors.CHECKBOX_CHECK : GuiColors.TEXT_DISABLED;
+            float checkSize = MODERN_CHECKBOX_SIZE * 0.6f;
+            float checkX = this.x + (MODERN_CHECKBOX_SIZE - checkSize) / 2f;
+            float checkY = this.y + (MODERN_CHECKBOX_SIZE - checkSize) / 2f;
             GuiDrawingUtils.drawRoundedRect(
-                    (float) (this.x + inset), (float) (this.y + inset),
-                    (float) (this.width - 2 * inset), (float) (this.height - 2 * inset),
-                    1f,
-                    currentCheckColor
+                    checkX, checkY,
+                    checkSize, checkSize,
+                    checkSize / 2f, checkColor
             );
         }
 
-        drawSideLabel((this.height - this.fontRenderer.FONT_HEIGHT) / 2 + 1, 8, mouseX, mouseY);
-    }
-
-    private boolean isLabelHovered(int mouseX, int mouseY) {
-        if (this.label == null || this.label.isEmpty()) return false;
-
-        int labelXOffset = 8;
-        int labelActualX = this.x + this.width + labelXOffset;
-        int labelActualY = this.y + (this.height - this.fontRenderer.FONT_HEIGHT) / 2 + 1;
-        int labelWidth = this.fontRenderer.getStringWidth(this.label);
-        int labelHeight = this.fontRenderer.FONT_HEIGHT;
-
-        return mouseX >= labelActualX && mouseX < labelActualX + labelWidth &&
-                mouseY >= labelActualY && mouseY < labelActualY + labelHeight;
+        if (this.label != null && !this.label.isEmpty()) {
+            int textColor = this.enabled ? GuiColors.TEXT_PRIMARY : GuiColors.TEXT_DISABLED;
+            int textX = this.x + MODERN_CHECKBOX_SIZE + 4;
+            int textY = this.y + (MODERN_CHECKBOX_SIZE - this.fontRenderer.FONT_HEIGHT) / 2 + 1;
+            this.fontRenderer.drawStringWithShadow(
+                    this.label,
+                    (float) textX,
+                    (float) textY,
+                    textColor
+            );
+        }
     }
 
     @Override
     public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
         if (!this.enabled || !this.visible || mouseButton != 0) return false;
 
-        boolean boxClicked = this.hovered;
-        boolean labelClicked = isLabelHovered(mouseX, mouseY);
-
-        if (boxClicked || labelClicked) {
-            this.isChecked = !this.isChecked;
-            this.onValueChanged.accept(this.isChecked);
+        if (this.isMouseOver(mouseX, mouseY)) {
+            this.checked = !this.checked;
             this.mc.getSoundHandler().playSound(PositionedSoundRecord.create(new ResourceLocation("gui.button.press"), 0.7F));
+            if (this.onValueChanged != null) {
+                this.onValueChanged.accept(this.checked);
+            }
             return true;
         }
         return false;
     }
 
-    protected void drawSideLabel(int labelYOffset, int xOffset, int mouseX, int mouseY) {
-        if (this.label != null && !this.label.isEmpty()) {
-            int labelX = this.x + this.width + xOffset;
-            int labelY = this.y + labelYOffset;
-            boolean isActualLabelHovered = isLabelHovered(mouseX, mouseY);
-            int textColor;
-            if (!this.enabled) {
-                textColor = GuiColors.TEXT_DISABLED;
-            } else if (isActualLabelHovered) {
-                textColor = GuiColors.TEXT_HOVER;
-            } else {
-                textColor = GuiColors.TEXT_PRIMARY;
+    public boolean isChecked() {
+        return this.checked;
+    }
+
+    public void setChecked(boolean checked) {
+        if (this.checked != checked) {
+            this.checked = checked;
+            if (this.onValueChanged != null) {
+                this.onValueChanged.accept(this.checked);
             }
-            this.fontRenderer.drawStringWithShadow(this.label, (float)labelX, (float)labelY, textColor);
         }
     }
 }
