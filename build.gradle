@@ -1,0 +1,95 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+    }
+}
+
+apply plugin: 'java-library'
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'maven-publish'
+
+group = "bot.seven.wlrgui"
+archivesBaseName = "wlrgui"
+version = "0.1.0"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+minecraft {
+    version = "1.8.9-11.15.1.2318-1.8.9"
+    runDir = "run_library_test"
+    mappings = "stable_20"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources {
+            srcDirs = ['src/main/resources']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+        resources {
+            srcDirs = ['src/test/resources']
+        }
+    }
+}
+
+processResources {
+    from(sourceSets.main.resources.srcDirs)
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId = project.group
+            artifactId = project.archivesBaseName
+            version = project.version
+
+            artifact tasks.sourcesJar
+            artifact tasks.javadocJar
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/7wlr/wlrgui")
+            credentials {
+                username = project.findProperty("7wlr") ?: System.getenv("7wlr")
+                password = project.findProperty("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") ?: System.getenv("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")
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from tasks.javadoc.destinationDir
+}
