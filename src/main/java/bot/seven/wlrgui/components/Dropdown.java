@@ -23,7 +23,7 @@ import java.util.function.BiConsumer;
 public class Dropdown extends GuiComponentBase {
 
     private int selectedIndex;
-    private boolean isOpen = false;
+    public boolean isOpen = false;
 
     private final List<String> options;
     private final BiConsumer<Integer, String> onSelectionChanged;
