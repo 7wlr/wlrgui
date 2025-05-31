@@ -1,6 +1,6 @@
-package bot.seven.wlrgui.annotations;
+package bot.seven.annotations;
 
-import bot.seven.wlrgui.components.GuiComponentBase;
+import bot.seven.components.GuiComponentBase;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

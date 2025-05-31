@@ -1,4 +1,4 @@
-package bot.seven.wlrgui.components;
+package bot.seven.components;
 
 import bot.seven.wlrgui.theme.GuiColors;
 import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_TEXT_INPUT_HEIGHT;

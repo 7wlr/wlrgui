@@ -1,7 +1,8 @@
-package bot.seven.wlrgui.gen;
+package bot.seven.gen;
 
 import bot.seven.wlrgui.annotations.Property;
-import bot.seven.wlrgui.components.*;
+import bot.seven.components.*;
+
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

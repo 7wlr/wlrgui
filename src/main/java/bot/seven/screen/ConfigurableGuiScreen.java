@@ -1,9 +1,9 @@
-package bot.seven.wlrgui.screen;
+package bot.seven.screen;
 
-import bot.seven.wlrgui.components.*;
-import bot.seven.wlrgui.gen.GuiGen;
-import bot.seven.wlrgui.theme.GuiColors;
-import bot.seven.wlrgui.utils.GuiDrawingUtils;
+import bot.seven.components.*;
+import bot.seven.gen.GuiGen;
+import bot.seven.theme.GuiColors;
+import bot.seven.utils.GuiDrawingUtils;
 
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;

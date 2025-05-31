@@ -1,4 +1,4 @@
-package bot.seven.wlrgui.components;
+package bot.seven.components;
 
 import bot.seven.wlrgui.theme.GuiColors;
 import bot.seven.wlrgui.utils.GuiDrawingUtils;

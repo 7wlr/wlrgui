@@ -1,4 +1,4 @@
-package bot.seven.wlrgui.theme;
+package bot.seven.theme;
 
 public final class GuiDimensions {
 
