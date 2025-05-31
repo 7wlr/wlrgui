@@ -1,10 +1,10 @@
 package bot.seven.components;
 
-import bot.seven.wlrgui.theme.GuiColors;
-import bot.seven.wlrgui.utils.GuiDrawingUtils;
+import bot.seven.theme.GuiColors;
+import bot.seven.utils.GuiDrawingUtils;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.util.ResourceLocation;
-import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_BUTTON_HEIGHT;
+import static bot.seven.theme.GuiDimensions.MODERN_BUTTON_HEIGHT;
 
 import java.util.function.Consumer;
 

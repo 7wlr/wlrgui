@@ -1,7 +1,7 @@
 package bot.seven.components;
 
-import bot.seven.wlrgui.theme.GuiColors;
-import bot.seven.wlrgui.utils.GuiDrawingUtils;
+import bot.seven.theme.GuiColors;
+import bot.seven.utils.GuiDrawingUtils;
 import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.opengl.GL11;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -9,7 +9,7 @@ import net.minecraft.util.ResourceLocation;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.function.BiConsumer;
-import static bot.seven.wlrgui.theme.GuiDimensions.*;
+import static bot.seven.theme.GuiDimensions.*;
 
 public class Dropdown extends GuiComponentBase {
 

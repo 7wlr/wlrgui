@@ -1,8 +1,8 @@
 package bot.seven.components;
 
-import bot.seven.wlrgui.theme.GuiColors;
-import bot.seven.wlrgui.theme.GuiDimensions;
-import bot.seven.wlrgui.utils.GuiDrawingUtils;
+import bot.seven.theme.GuiColors;
+import bot.seven.theme.GuiDimensions;
+import bot.seven.utils.GuiDrawingUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;

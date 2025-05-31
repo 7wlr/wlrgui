@@ -1,11 +1,11 @@
 package bot.seven.components;
 
-import bot.seven.wlrgui.theme.GuiColors;
-import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_TEXT_INPUT_HEIGHT;
-import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_ELEMENT_PADDING_X;
-import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_CORNER_RADIUS;
+import bot.seven.theme.GuiColors;
+import static bot.seven.theme.GuiDimensions.MODERN_TEXT_INPUT_HEIGHT;
+import static bot.seven.theme.GuiDimensions.MODERN_ELEMENT_PADDING_X;
+import static bot.seven.theme.GuiDimensions.MODERN_CORNER_RADIUS;
 
-import bot.seven.wlrgui.utils.GuiDrawingUtils;
+import bot.seven.utils.GuiDrawingUtils;
 
 import net.minecraft.client.gui.GuiTextField;
 

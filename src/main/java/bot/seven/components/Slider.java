@@ -1,11 +1,11 @@
 package bot.seven.components;
 
-import bot.seven.wlrgui.theme.GuiColors;
-import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_SLIDER_HEIGHT;
-import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_SLIDER_KNOB_RADIUS;
-import static bot.seven.wlrgui.theme.GuiDimensions.MODERN_SLIDER_TRACK_HEIGHT;
+import bot.seven.theme.GuiColors;
+import static bot.seven.theme.GuiDimensions.MODERN_SLIDER_HEIGHT;
+import static bot.seven.theme.GuiDimensions.MODERN_SLIDER_KNOB_RADIUS;
+import static bot.seven.theme.GuiDimensions.MODERN_SLIDER_TRACK_HEIGHT;
 
-import bot.seven.wlrgui.utils.GuiDrawingUtils;
+import bot.seven.utils.GuiDrawingUtils;
 
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
