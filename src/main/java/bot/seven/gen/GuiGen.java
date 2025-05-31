@@ -1,6 +1,6 @@
 package bot.seven.gen;
 
-import bot.seven.wlrgui.annotations.Property;
+import bot.seven.annotations.Property;
 import bot.seven.components.*;
 
 
